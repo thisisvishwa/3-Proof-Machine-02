@@ -1,0 +1,151 @@
+[
+  {
+    "lead_id": "LAI-20260913-6BFC4430",
+    "created_at": "2026-09-13T16:45:09.760Z",
+    "updated_at": "2026-09-13T16:45:09.760Z",
+    "input": {
+      "fullName": "Daniel Wilson",
+      "businessName": "Apex Consulting",
+      "email": "daniel@apexconsulting.io",
+      "phone": "+14155550103",
+      "website": "apexconsulting.io",
+      "industry": "B2B SaaS",
+      "companySize": "11-50",
+      "budget": "$15k - $50k",
+      "currentChallenge": "CRM Automation",
+      "desiredOutcome": "Improve lead conversion",
+      "timeline": "Within 30 days",
+      "additionalNotes": "Source: LeadFlow Automation | Lead ID: "
+    },
+    "analysis": {
+      "business_need": {
+        "primary": "Conversion Optimization",
+        "secondary": "Lead Generation",
+        "summary": "The prospect appears to be looking for conversion optimization combined with lead generation to Improve lead conversion."
+      },
+      "lead_intent": {
+        "level": "Evaluating",
+        "confidence": 78,
+        "reason": "Actively comparing options and requesting proposals"
+      },
+      "urgency": {
+        "level": "High",
+        "reason": "Prospect has identified specific business problem and indicated near-term timeline"
+      },
+      "qualification": {
+        "score": 79,
+        "temperature": "WARM",
+        "factors": {
+          "business_fit": 20,
+          "buying_intent": 15,
+          "budget": 20,
+          "urgency": 16,
+          "problem_clarity": 8
+        },
+        "reasoning": "Lead scored 79/100. Business Fit 20/20 (b2b saas), Buying Intent 15/20 (Evaluating), Budget 20/20 ($15k - $50k), Urgency 16/20 (High), Problem Clarity 8/20. Strong ICP match. Intent requires nurturing. Budget indicates serious investment."
+      },
+      "recommended_action": {
+        "action": "Book discovery call within 48h",
+        "priority": "High",
+        "reason": "Good potential, requires additional qualification and case studies"
+      },
+      "sales_message": {
+        "email": "Hi Daniel,\n\nThanks for sharing details about Apex Consulting — I saw you're dealing with \"CRM Automation\" and looking to Improve lead conversion.\n\nBased on what you shared, there's a clear opportunity to help with conversion optimization and lead generation — specifically the prospect appears to be looking for conversion optimization combined with lead generation to improve lead conversion.\n\nWe've helped similar B2B SaaS teams map their funnel in a 30-min call and identify 3 quick wins they can implement this week.\n\nWorth a quick 30-min strategy call this week? I've blocked time today/tomorrow if helpful.\n\nBest,\nAlex — LeadFlow Pro\n\nP.S. Took a quick look at apexconsulting.io — spotted a couple of funnel opportunities we can discuss.",
+        "whatsapp": "Hi Daniel! Saw your note about conversion optimization for Apex Consulting. We help B2B SaaS fix this in 7-14 days. Quick 15-min call this week? I can share 3 quick wins. — Alex, LeadFlow Pro",
+        "linkedin": "Hi Daniel, noticed Apex Consulting is focused on CRM Automation. We've helped similar B2B SaaS companies turn more traffic into qualified pipeline without extra ad spend. Open to a brief 20-min exchange of ideas next week? No pitch — just sharing what's working for teams like yours. — Alex",
+        "sms": "Hi Daniel, Alex from LeadFlow Pro. Saw your conversion optimization inquiry for Apex Consulting. Can we do a quick 15-min call this week to map your funnel? Reply YES and I'll send calendar."
+      },
+      "_meta": {
+        "provider": "heuristic",
+        "model": "gpt-4o-mini",
+        "demoMode": true,
+        "systemPrompt": "\nYou are LeadFlow AI, a senior sales-intelligence analyst for LeadFlow Pro.\n\nAnalyze ONLY the provided lead information. Do not invent facts. If information is missing, return \"unknown\" for that field..."
+      }
+    },
+    "score": 79,
+    "temperature": "WARM",
+    "recommended_action": "Book discovery call within 48h",
+    "status": "analyzed",
+    "source": "LeadFlow Automation (Demo 2)",
+    "original_payload": {
+      "name": "Daniel Wilson",
+      "business": "Apex Consulting",
+      "email": "daniel@apexconsulting.io",
+      "phone": "+14155550103",
+      "website": "apexconsulting.io",
+      "industry": "B2B SaaS",
+      "budget": "$15k - $50k",
+      "needs": "CRM Automation",
+      "message": "Losing enterprise deals due to slow follow-up, need CRM automation and AI qualification immediately, ready to start this week, budget approved",
+      "source": "LeadFlow Automation"
+    }
+  },
+  {
+    "lead_id": "LAI-20260913-12ABA2B1",
+    "created_at": "2026-09-13T16:45:07.954Z",
+    "updated_at": "2026-09-13T16:45:07.954Z",
+    "input": {
+      "fullName": "Sarah Johnson",
+      "businessName": "Acme Growth Solutions",
+      "email": "sarah@acme.co",
+      "phone": "+14155550101",
+      "website": "acmegrowth.co",
+      "industry": "Professional Services",
+      "companySize": "11-50",
+      "budget": "$2,500–$5,000/month",
+      "currentChallenge": "We get decent traffic but leads slip through — no follow-up system, manual CRM entry, losing hot prospects",
+      "desiredOutcome": "Repeatable acquisition system with automated follow-up",
+      "timeline": "Within 30 days",
+      "additionalNotes": "Using HubSpot, team of 3 sales"
+    },
+    "analysis": {
+      "business_need": {
+        "primary": "CRM Automation",
+        "secondary": "Follow-Up Automation",
+        "summary": "The prospect appears to be looking for crm automation combined with follow-up automation to Repeatable acquisition system with automated follow-up."
+      },
+      "lead_intent": {
+        "level": "Evaluating",
+        "confidence": 78,
+        "reason": "Actively comparing options and requesting proposals"
+      },
+      "urgency": {
+        "level": "Critical",
+        "reason": "Prospect identified critical business problem with immediate implementation need"
+      },
+      "qualification": {
+        "score": 80,
+        "temperature": "HOT",
+        "factors": {
+          "business_fit": 20,
+          "buying_intent": 15,
+          "budget": 8,
+          "urgency": 19,
+          "problem_clarity": 18
+        },
+        "reasoning": "Lead scored 80/100. Business Fit 20/20 (professional services), Buying Intent 15/20 (Evaluating), Budget 8/20 ($2,500–$5,000/month), Urgency 19/20 (Critical), Problem Clarity 18/20. Strong ICP match. Intent requires nurturing. Budget may need qualification."
+      },
+      "recommended_action": {
+        "action": "Contact within 15 minutes",
+        "priority": "Critical",
+        "reason": "Lead demonstrates strong buying intent, clearly defined problem, and near-term timeline"
+      },
+      "sales_message": {
+        "email": "Hi Sarah,\n\nThanks for sharing details about Acme Growth Solutions — I saw you're dealing with \"We get decent traffic but leads slip through — no follow-up system, manual CRM entry, losing hot pro\" and looking to Repeatable acquisition system with automated follow-up.\n\nBased on what you shared, there's a clear opportunity to help with crm automation and follow-up automation — specifically the prospect appears to be looking for crm automation combined with follow-up automation to repeatable acquisition system with automated follow-up.\n\nWe've helped similar Professional Services teams launch this in 7-14 days and see conversion lift within 30 days.\n\nWorth a quick 30-min strategy call this week? I've blocked time today/tomorrow if helpful.\n\nBest,\nAlex — LeadFlow Pro\n\nP.S. Took a quick look at acmegrowth.co — spotted a couple of funnel opportunities we can discuss.",
+        "whatsapp": "Hi Sarah! Saw your note about crm automation for Acme Growth Solutions. We help Professional Services fix this in 7-14 days. Quick 15-min call today? I can share 3 quick wins. — Alex, LeadFlow Pro",
+        "linkedin": "Hi Sarah, noticed Acme Growth Solutions is focused on We get decent traffic but leads slip through — no follow-up . We've helped similar Professional Services companies turn more traffic into qualified pipeline without extra ad spend. Open to a brief 20-min exchange of ideas next week? No pitch — just sharing what's working for teams like yours. — Alex",
+        "sms": "Hi Sarah, Alex from LeadFlow Pro. Saw your crm automation inquiry for Acme Growth Solutions. Can we do a quick 15-min call today to map your funnel? Reply YES and I'll send calendar."
+      },
+      "_meta": {
+        "provider": "heuristic",
+        "model": "gpt-4o-mini",
+        "demoMode": true,
+        "systemPrompt": "\nYou are LeadFlow AI, a senior sales-intelligence analyst for LeadFlow Pro.\n\nAnalyze ONLY the provided lead information. Do not invent facts. If information is missing, return \"unknown\" for that field..."
+      }
+    },
+    "score": 80,
+    "temperature": "HOT",
+    "recommended_action": "Contact within 15 minutes",
+    "status": "analyzed"
+  }
+]

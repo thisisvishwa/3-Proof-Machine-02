@@ -1,0 +1,10 @@
+Key,Value,Description,Environment Variable
+GOOGLE_SHEETS_ID,1a2b3c4d5e6f_demo_id,Spreadsheet ID for leads database,GOOGLE_SHEETS_ID
+SALES_TEAM_EMAIL,sales@leadflowpro.demo,Email for HOT leads,SALES_TEAM_EMAIL
+MANAGER_EMAIL,manager@leadflowpro.demo,Email for WARM leads and daily reports,MANAGER_EMAIL
+EMAIL_FROM,automation@leadflowpro.demo,From address for notifications,EMAIL_FROM
+AI_MODEL,gpt-4o-mini,OpenAI model for qualification,AI_MODEL
+AI_PROVIDER,heuristic,"heuristic | openai | anthropic",AI_PROVIDER
+WEBHOOK_PATH,/leadflow/new-lead,Webhook endpoint path,WEBHOOK_PATH
+DAILY_REPORT_TIME,09:00,Cron time for daily report,DAILY_REPORT_CRON
+WHATSAPP_NUMBER,14155552671,Placeholder WhatsApp number,WHATSAPP_NUMBER

@@ -1,0 +1,144 @@
+{
+  "name": "LeadFlow - D: Daily Reporting",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "minutesInterval": 0,
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "id": "schedule-daily",
+      "name": "Schedule - Daily 9AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $env.GOOGLE_SHEETS_ID }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Leads",
+          "mode": "list"
+        },
+        "options": {}
+      },
+      "id": "sheets-read",
+      "name": "Google Sheets - Read Leads",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [680, 300],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "google-sheets-creds",
+          "name": "Google Sheets OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const leads = $input.all().map(i => i.json);\nconst today = new Date().toLocaleDateString();\nconst todayLeads = leads.filter(l => l.Date === today || (l['Created At'] && new Date(l['Created At']).toLocaleDateString() === today));\n\nconst valid = todayLeads.filter(l => l['Lead Temperature'] !== 'INVALID');\nconst invalid = todayLeads.filter(l => l['Lead Temperature'] === 'INVALID');\nconst hot = valid.filter(l => l['Lead Temperature'] === 'HOT');\nconst warm = valid.filter(l => l['Lead Temperature'] === 'WARM');\nconst cold = valid.filter(l => l['Lead Temperature'] === 'COLD');\n\nconst scores = valid.map(l => parseInt(l['Qualification Score'])).filter(n => !isNaN(n));\nconst avgScore = scores.length ? Math.round(scores.reduce((a,b)=>a+b,0)/scores.length) : 0;\nconst highest = valid.sort((a,b) => (parseInt(b['Qualification Score'])||0) - (parseInt(a['Qualification Score'])||0))[0];\n\nconst needs = {};\nconst industries = {};\nvalid.forEach(l => {\n  if (l['AI Business Need']) needs[l['AI Business Need']] = (needs[l['AI Business Need']]||0)+1;\n  if (l.Industry) industries[l.Industry] = (industries[l.Industry]||0)+1;\n});\nconst mostCommonNeed = Object.entries(needs).sort((a,b)=>b[1]-a[1])[0]?.[0] || 'N/A';\nconst mostCommonIndustry = Object.entries(industries).sort((a,b)=>b[1]-a[1])[0]?.[0] || 'N/A';\n\nreturn [{\n  json: {\n    date: today,\n    generated_at: new Date().toISOString(),\n    total_leads: todayLeads.length,\n    valid_leads: valid.length,\n    invalid_leads: invalid.length,\n    hot_leads: hot.length,\n    warm_leads: warm.length,\n    cold_leads: cold.length,\n    average_score: avgScore,\n    highest_scoring_lead: highest ? { name: highest.Name, business: highest.Business, score: highest['Qualification Score'], temp: highest['Lead Temperature'] } : null,\n    most_common_need: mostCommonNeed,\n    most_common_industry: mostCommonIndustry,\n    immediate_action: hot.map(h => ({ name: h.Name, business: h.Business, score: h['Qualification Score'] })),\n    breakdown: { needs, industries },\n    leads: todayLeads\n  }\n}];"
+      },
+      "id": "code-report",
+      "name": "Code - Generate Daily Report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $env.MANAGER_EMAIL }}",
+        "subject": "=LeadFlow Daily Report — {{ $json.date }}",
+        "text": "=LeadFlow Daily Report — {{ $json.date }}\n\nGenerated at: {{ $json.generated_at }}\n\nSUMMARY:\n- Total leads: {{ $json.total_leads }}\n- Valid: {{ $json.valid_leads }} | Invalid: {{ $json.invalid_leads }}\n- HOT: {{ $json.hot_leads }} | WARM: {{ $json.warm_leads }} | COLD: {{ $json.cold_leads }}\n- Average score: {{ $json.average_score }}/100\n\nHIGHEST SCORING LEAD:\n{{ $json.highest_scoring_lead.name }} at {{ $json.highest_scoring_lead.business }} — Score {{ $json.highest_scoring_lead.score }} ({{ $json.highest_scoring_lead.temp }})\n\nMOST COMMON:\n- Business Need: {{ $json.most_common_need }}\n- Industry: {{ $json.most_common_industry }}\n\nLEADS REQUIRING IMMEDIATE ACTION:\n{{ $json.immediate_action.map(l => `• ${l.name} (${l.business}) — Score ${l.score}`).join('\\n') }}\n\nBREAKDOWN:\nBusiness Needs: {{ JSON.stringify($json.breakdown.needs) }}\nIndustries: {{ JSON.stringify($json.breakdown.industries) }}\n\nThis is an automated report from LeadFlow Automation.\n",
+        "options": {}
+      },
+      "id": "email-report",
+      "name": "Email - Send Daily Report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1120, 300],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-creds",
+          "name": "SMTP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $env.GOOGLE_SHEETS_ID }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Daily Reports",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "mapping": {
+            "Date": "={{ $json.date }}",
+            "Total Leads": "={{ $json.total_leads }}",
+            "Valid Leads": "={{ $json.valid_leads }}",
+            "Invalid Leads": "={{ $json.invalid_leads }}",
+            "Hot Leads": "={{ $json.hot_leads }}",
+            "Warm Leads": "={{ $json.warm_leads }}",
+            "Cold Leads": "={{ $json.cold_leads }}",
+            "Avg Score": "={{ $json.average_score }}",
+            "Highest Lead": "={{ $json.highest_scoring_lead.name + ' - ' + $json.highest_scoring_lead.score }}",
+            "Most Common Need": "={{ $json.most_common_need }}",
+            "Most Common Industry": "={{ $json.most_common_industry }}",
+            "Generated At": "={{ $json.generated_at }}"
+          }
+        }
+      },
+      "id": "sheets-report",
+      "name": "Google Sheets - Save Report",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [1340, 300],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "google-sheets-creds",
+          "name": "Google Sheets OAuth2"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule - Daily 9AM": {
+      "main": [[{ "node": "Google Sheets - Read Leads", "type": "main", "index": 0 }]]
+    },
+    "Google Sheets - Read Leads": {
+      "main": [[{ "node": "Code - Generate Daily Report", "type": "main", "index": 0 }]]
+    },
+    "Code - Generate Daily Report": {
+      "main": [[{ "node": "Email - Send Daily Report", "type": "main", "index": 0 }]]
+    },
+    "Email - Send Daily Report": {
+      "main": [[{ "node": "Google Sheets - Save Report", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "v1",
+  "tags": [
+    { "name": "LeadFlow Pro" },
+    { "name": "Reporting" }
+  ]
+}

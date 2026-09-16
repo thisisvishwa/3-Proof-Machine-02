@@ -1,0 +1,147 @@
+{
+  "name": "LeadFlow - B: AI Qualification",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowId": "workflow-b-trigger"
+      },
+      "id": "execute-trigger",
+      "name": "Execute Workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "resource": "chat",
+        "operation": "complete",
+        "model": "={{ $env.AI_MODEL || 'gpt-4o-mini' }}",
+        "messages": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You are LeadFlow Pro's lead qualification AI. Analyze the incoming lead and return ONLY valid JSON with this exact structure:\n{\n  \"business_need\": \"Lead Generation | Website | Conversion Optimization | CRM Automation | AI Automation | Follow-Up Automation | Other\",\n  \"lead_intent\": \"Researching | Interested | Evaluating | Ready to Buy\",\n  \"urgency\": \"Low | Medium | High | Critical\",\n  \"qualification_score\": 0-100 integer,\n  \"lead_temperature\": \"HOT (80-100) | WARM (50-79) | COLD (0-49)\",\n  \"recommended_action\": \"string\",\n  \"reasoning\": \"string explaining score\",\n  \"sales_message\": \"personalized email draft referencing business and need, concise, professional, CTA for strategy call\"\n}\n\nSCORING CRITERIA (be transparent, not random):\n- Budget: <$1k=5-10pts, $1k-$5k=10-20pts, $5k-$15k=20-28pts, $15k-$50k=28-35pts, $50k+=35pts (max 35)\n- Intent: Researching=5, Interested=12, Evaluating=18, Ready to Buy=25 (max 25)\n- Urgency: Low=2, Medium=6, High=10, Critical=15 (max 15)\n- Data Quality: business email +8, website +5, message >50 chars +7, specific need +5 (max 25)\nTotal 100. Temperature MUST correspond: 80-100=HOT, 50-79=WARM, 0-49=COLD.\nNever make unsupported promises."
+            },
+            {
+              "role": "user",
+              "content": "=Lead to analyze:\nName: {{ $json.name }}\nBusiness: {{ $json.business }}\nEmail: {{ $json.email }} (business email: {{ $json.is_business_email }})\nPhone: {{ $json.phone }}\nWebsite: {{ $json.website }}\nIndustry: {{ $json.industry }}\nBudget: {{ $json.budget }}\nNeed: {{ $json.needs }}\nMessage: {{ $json.message }}\nSource: {{ $json.source }}\n\nReturn JSON only."
+            }
+          ]
+        },
+        "simplify": false,
+        "responseFormat": "json_object"
+      },
+      "id": "openai-qualify",
+      "name": "OpenAI - Qualify Lead",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [680, 300],
+      "credentials": {
+        "openAiApi": {
+          "id": "openai-creds",
+          "name": "OpenAI API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let aiOutput;\ntry {\n  const raw = $input.first().json;\n  // Handle both direct JSON and OpenAI response structure\n  let content = raw.message?.content || raw.choices?.[0]?.message?.content || raw.response || JSON.stringify(raw);\n  if (typeof content === 'string') {\n    // Extract JSON from markdown code blocks if present\n    const jsonMatch = content.match(/```json\\s*([\\s\\S]*?)\\s*```/) || content.match(/```\\s*([\\s\\S]*?)\\s*```/);\n    if (jsonMatch) content = jsonMatch[1];\n    aiOutput = JSON.parse(content);\n  } else {\n    aiOutput = content;\n  }\n} catch (e) {\n  throw new Error(`AI JSON parsing failed: ${e.message}`);\n}\n\n// Validate score\nif (typeof aiOutput.qualification_score !== 'number' || aiOutput.qualification_score < 0 || aiOutput.qualification_score > 100) {\n  throw new Error(`Invalid score: ${aiOutput.qualification_score}`);\n}\n\n// Validate temperature corresponds to score\nlet expectedTemp = 'COLD';\nif (aiOutput.qualification_score >= 80) expectedTemp = 'HOT';\nelse if (aiOutput.qualification_score >= 50) expectedTemp = 'WARM';\n\nif (aiOutput.lead_temperature !== expectedTemp) {\n  aiOutput.lead_temperature = expectedTemp; // Auto-correct\n  aiOutput._temperature_corrected = true;\n}\n\n// Validate required fields\nconst required = ['business_need','lead_intent','urgency','qualification_score','lead_temperature','recommended_action','reasoning','sales_message'];\nfor (const field of required) {\n  if (aiOutput[field] === undefined) throw new Error(`Missing required field: ${field}`);\n}\n\nreturn [{ json: { ...$input.first().json, ...aiOutput, ai_processed_at: new Date().toISOString() } }];"
+      },
+      "id": "code-validate-ai",
+      "name": "Code - Validate AI Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $env.GOOGLE_SHEETS_ID }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Leads",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "mapping": {
+            "Lead ID": "={{ $json.lead_id }}",
+            "AI Business Need": "={{ $json.business_need }}",
+            "Lead Intent": "={{ $json.lead_intent }}",
+            "Urgency": "={{ $json.urgency }}",
+            "Qualification Score": "={{ $json.qualification_score }}",
+            "Lead Temperature": "={{ $json.lead_temperature }}",
+            "Recommended Action": "={{ $json.recommended_action }}",
+            "Sales Message": "={{ $json.sales_message }}"
+          },
+          "matchingColumns": ["Lead ID"]
+        }
+      },
+      "id": "sheets-update",
+      "name": "Google Sheets - Update with AI",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [1120, 300],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "google-sheets-creds",
+          "name": "Google Sheets OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "workflow-c-notification",
+          "mode": "id"
+        },
+        "data": "={{ $json }}"
+      },
+      "id": "execute-c",
+      "name": "Execute Workflow - Notification & Follow-Up",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1,
+      "position": [1340, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Fallback scoring when AI fails\nconst lead = $input.first().json;\nlet score = 0;\nif (lead.budget.includes('$50k')) score += 35;\nelse if (lead.budget.includes('$15k')) score += 28;\nelse if (lead.budget.includes('$5k')) score += 20;\nelse if (lead.budget.includes('$1k')) score += 10;\nelse score += 5;\nscore += lead.is_business_email ? 8 : 0;\nscore += lead.website ? 5 : 0;\nscore += lead.message && lead.message.length > 50 ? 7 : 0;\nlet temp = 'COLD';\nif (score >= 80) temp = 'HOT';\nelse if (score >= 50) temp = 'WARM';\nreturn [{ json: { ...lead, business_need: 'Other', lead_intent: 'Researching', urgency: 'Low', qualification_score: score, lead_temperature: temp, recommended_action: 'Manual review required - AI failed', reasoning: `Fallback scoring: ${score}`, sales_message: `Hi ${lead.name}, thanks for reaching out - we'll review and get back shortly.`, ai_fallback: true } }];"
+      },
+      "id": "code-fallback",
+      "name": "Code - Fallback Scoring",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 600]
+    }
+  ],
+  "connections": {
+    "Execute Workflow Trigger": {
+      "main": [[{ "node": "OpenAI - Qualify Lead", "type": "main", "index": 0 }]]
+    },
+    "OpenAI - Qualify Lead": {
+      "main": [[{ "node": "Code - Validate AI Output", "type": "main", "index": 0 }]]
+    },
+    "Code - Validate AI Output": {
+      "main": [[{ "node": "Google Sheets - Update with AI", "type": "main", "index": 0 }]],
+      "error": [[{ "node": "Code - Fallback Scoring", "type": "main", "index": 0 }]]
+    },
+    "Google Sheets - Update with AI": {
+      "main": [[{ "node": "Execute Workflow - Notification & Follow-Up", "type": "main", "index": 0 }]]
+    },
+    "Code - Fallback Scoring": {
+      "main": [[{ "node": "Google Sheets - Update with AI", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "v1",
+  "tags": [
+    { "name": "LeadFlow Pro" },
+    { "name": "AI" }
+  ]
+}

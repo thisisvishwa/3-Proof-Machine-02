@@ -1,0 +1,217 @@
+{
+  "name": "LeadFlow - C: Notification & Follow-Up",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowId": "workflow-c-trigger"
+      },
+      "id": "trigger-c",
+      "name": "Execute Workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.qualification_score }}",
+              "operation": "largerEqual",
+              "value2": 80
+            }
+          ]
+        }
+      },
+      "id": "if-hot",
+      "name": "IF - HOT Lead?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.qualification_score }}",
+              "operation": "largerEqual",
+              "value2": 50
+            }
+          ]
+        }
+      },
+      "id": "if-warm",
+      "name": "IF - WARM Lead?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [680, 500]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $env.SALES_TEAM_EMAIL }}",
+        "subject": "=🔥 HOT LEAD — {{ $json.business }} — Score {{ $json.qualification_score }}",
+        "text": "=HOT LEAD ALERT\n\nLead ID: {{ $json.lead_id }}\nName: {{ $json.name }}\nBusiness: {{ $json.business }}\nEmail: {{ $json.email }}\nPhone: {{ $json.phone }}\nWebsite: {{ $json.website }}\nIndustry: {{ $json.industry }}\nBudget: {{ $json.budget }}\nNeed: {{ $json.needs }}\nMessage: {{ $json.message }}\n\nAI QUALIFICATION:\nBusiness Need: {{ $json.business_need }}\nIntent: {{ $json.lead_intent }}\nUrgency: {{ $json.urgency }}\nScore: {{ $json.qualification_score }}/100 ({{ $json.lead_temperature }})\nReasoning: {{ $json.reasoning }}\nRecommended Action: {{ $json.recommended_action }}\n\nSales Message Preview:\n{{ $json.sales_message }}\n\nAction Required: Immediate outreach within 15 mins\n",
+        "options": {}
+      },
+      "id": "email-hot",
+      "name": "Email - HOT Lead Alert",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [900, 200],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-creds",
+          "name": "SMTP Sales"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $env.MANAGER_EMAIL }}",
+        "subject": "=🟡 WARM LEAD — {{ $json.business }} — Score {{ $json.qualification_score }}",
+        "text": "=WARM LEAD\n\nName: {{ $json.name }} | Business: {{ $json.business }} | Score: {{ $json.qualification_score }}\nNeed: {{ $json.needs }} | Intent: {{ $json.lead_intent }} | Urgency: {{ $json.urgency }}\nRecommended: {{ $json.recommended_action }}\n\nFull details in Google Sheets.",
+        "options": {}
+      },
+      "id": "email-warm",
+      "name": "Email - WARM Lead Notification",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [900, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "const lead = $input.first().json;\nconst followUp = {\n  lead_id: lead.lead_id,\n  to: lead.email,\n  subject: `Re: ${lead.business} - ${lead.business_need} opportunity`,\n  body: lead.sales_message,\n  status: lead.lead_temperature === 'HOT' ? 'immediate' : lead.lead_temperature === 'WARM' ? 'nurture_queued' : 'newsletter',\n  channels: {\n    email: { enabled: true, status: 'queued' },\n    whatsapp: { enabled: false, status: 'placeholder - requires WhatsApp Business API', note: 'Use WhatsApp node with credentials when available' },\n    crm: { enabled: false, status: 'placeholder - HubSpot/Salesforce integration ready', note: 'Add HubSpot/Salesforce node' },\n    slack: { enabled: false, status: 'placeholder', note: 'Add Slack node for sales channel alert' }\n  },\n  generated_at: new Date().toISOString()\n};\nreturn [{ json: { ...lead, follow_up: followUp } }];"
+      },
+      "id": "code-followup",
+      "name": "Code - Generate Follow-Up Package",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $env.GOOGLE_SHEETS_ID }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Leads",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "mapping": {
+            "Lead ID": "={{ $json.lead_id }}",
+            "Notification Status": "={{ $json.lead_temperature === 'HOT' ? 'Sent to sales team - HOT' : $json.lead_temperature === 'WARM' ? 'Sent to manager - WARM' : 'Suppressed - COLD' }}",
+            "Follow-Up Status": "={{ $json.follow_up.status }}",
+            "Sales Message": "={{ $json.sales_message }}"
+          },
+          "matchingColumns": ["Lead ID"]
+        }
+      },
+      "id": "sheets-update-followup",
+      "name": "Google Sheets - Update Follow-Up",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [1340, 300],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "google-sheets-creds",
+          "name": "Google Sheets OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $env.GOOGLE_SHEETS_ID }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Automation Logs",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "mapping": {
+            "Timestamp": "={{ $now }}",
+            "Lead ID": "={{ $json.lead_id }}",
+            "Node": "Notification & Follow-Up",
+            "Event Type": "={{ $json.lead_temperature }} lead processed",
+            "Message": "={{ 'Score ' + $json.qualification_score + ' - ' + $json.recommended_action }}",
+            "Level": "info"
+          }
+        }
+      },
+      "id": "sheets-log",
+      "name": "Google Sheets - Log Automation",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [1560, 300],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "google-sheets-creds",
+          "name": "Google Sheets OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { lead_id: $input.first().json.lead_id, event: 'cold_lead_stored', message: 'COLD lead stored without aggressive follow-up - included in daily report', temperature: 'COLD', score: $input.first().json.qualification_score } }];"
+      },
+      "id": "code-cold",
+      "name": "Code - Handle COLD Lead",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 650]
+    }
+  ],
+  "connections": {
+    "Execute Workflow Trigger": {
+      "main": [[{ "node": "IF - HOT Lead?", "type": "main", "index": 0 }]]
+    },
+    "IF - HOT Lead?": {
+      "main": [
+        [{ "node": "Email - HOT Lead Alert", "type": "main", "index": 0 }],
+        [{ "node": "IF - WARM Lead?", "type": "main", "index": 0 }]
+      ]
+    },
+    "IF - WARM Lead?": {
+      "main": [
+        [{ "node": "Email - WARM Lead Notification", "type": "main", "index": 0 }],
+        [{ "node": "Code - Handle COLD Lead", "type": "main", "index": 0 }]
+      ]
+    },
+    "Email - HOT Lead Alert": {
+      "main": [[{ "node": "Code - Generate Follow-Up Package", "type": "main", "index": 0 }]]
+    },
+    "Email - WARM Lead Notification": {
+      "main": [[{ "node": "Code - Generate Follow-Up Package", "type": "main", "index": 0 }]]
+    },
+    "Code - Handle COLD Lead": {
+      "main": [[{ "node": "Code - Generate Follow-Up Package", "type": "main", "index": 0 }]]
+    },
+    "Code - Generate Follow-Up Package": {
+      "main": [[{ "node": "Google Sheets - Update Follow-Up", "type": "main", "index": 0 }]]
+    },
+    "Google Sheets - Update Follow-Up": {
+      "main": [[{ "node": "Google Sheets - Log Automation", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "v1",
+  "tags": [
+    { "name": "LeadFlow Pro" },
+    { "name": "Notification" }
+  ]
+}

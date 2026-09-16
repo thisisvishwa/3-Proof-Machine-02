@@ -1,0 +1,20 @@
+{
+  "name": "leadflow-proof-machine",
+  "version": "1.0.0",
+  "private": true,
+  "description": "LeadFlow Pro — 3-Demo Proof Machine — 100% FREE deployment",
+  "scripts": {
+    "dev:demo1": "cd leadflow-pro && npm run dev",
+    "dev:demo2:backend": "cd leadflow-automation && node server/index.js",
+    "dev:demo2:frontend": "cd leadflow-automation/frontend && npm run dev",
+    "dev:demo3:backend": "cd leadflow-ai && node server/index.js",
+    "dev:demo3:frontend": "cd leadflow-ai/frontend && npm run dev",
+    "install:all": "cd leadflow-pro && npm install && cd ../leadflow-automation && npm install && cd frontend && npm install && cd ../../leadflow-ai && npm install && cd frontend && npm install",
+    "build:demo1": "cd leadflow-pro && npm run build",
+    "build:demo2:frontend": "cd leadflow-automation/frontend && npm run build",
+    "build:demo3:frontend": "cd leadflow-ai/frontend && npm run build",
+    "build:all": "npm run build:demo1 && npm run build:demo2:frontend && npm run build:demo3:frontend"
+  },
+  "keywords": ["lead-generation", "n8n", "ai", "automation", "demo", "free-deployment"],
+  "license": "MIT"
+}

@@ -1,0 +1,8 @@
+Timestamp,Lead ID,Node,Event Type,Message,Level,Data
+2026-09-13T10:00:01Z,LF-20260913-A1B2C3D4,Webhook,webhook_received,Incoming lead webhook received,info,"{""source"":""website""}"
+2026-09-13T10:00:02Z,LF-20260913-A1B2C3D4,Validate Lead,validation_passed,Lead validation passed,info,
+2026-09-13T10:00:03Z,LF-20260913-A1B2C3D4,Normalize Data,normalized,Lead normalized,info,
+2026-09-13T10:00:05Z,LF-20260913-A1B2C3D4,AI Qualification,ai_qualified,"AI qualification complete: CRM Automation, Ready to Buy, Score 92, HOT",info,
+2026-09-13T10:00:06Z,LF-20260913-A1B2C3D4,Hot/Warm/Cold Router,routed,Lead routed to HOT path,info,
+2026-09-13T10:00:07Z,LF-20260913-A1B2C3D4,Email Notification,notification_sent,HOT Lead email sent to sales,info,
+2026-09-13T10:00:08Z,LF-20260913-A1B2C3D4,Follow-Up Generation,follow_up_generated,Follow-up message generated,info,

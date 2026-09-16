@@ -1,0 +1,428 @@
+[
+  {
+    "id": "df4303fb-a915-440f-b222-7ff4e31e0f0f",
+    "timestamp": "2026-09-13T16:38:53.289Z",
+    "lead_id": "306f7126-8766-4626-9444-cdb2aebf10ea",
+    "type": "validation_failed",
+    "node": "Validate Lead",
+    "message": "Validation failed: Name is required and must be at least 2 characters; Valid email is required; Business name is required; Lead need or message is required; Phone format invalid; Industry is required; Budget is required",
+    "level": "warn",
+    "data": {
+      "errors": [
+        "Name is required and must be at least 2 characters",
+        "Valid email is required",
+        "Business name is required",
+        "Lead need or message is required",
+        "Phone format invalid",
+        "Industry is required",
+        "Budget is required"
+      ],
+      "payload": {
+        "name": "",
+        "business": "",
+        "email": "not-an-email",
+        "phone": "123",
+        "industry": "",
+        "budget": "",
+        "needs": "",
+        "message": "",
+        "source": "LeadFlow Pro Website",
+        "timestamp": "2026-09-13T16:38:53.287Z"
+      }
+    }
+  },
+  {
+    "id": "df1890d5-6e23-460e-ba68-6f754987e83e",
+    "timestamp": "2026-09-13T16:38:53.288Z",
+    "lead_id": "306f7126-8766-4626-9444-cdb2aebf10ea",
+    "type": "webhook",
+    "node": "Webhook",
+    "message": "Incoming lead webhook received",
+    "level": "info",
+    "data": {
+      "payload": [
+        "name",
+        "business",
+        "email",
+        "phone",
+        "industry",
+        "budget",
+        "needs",
+        "message",
+        "source",
+        "timestamp"
+      ]
+    }
+  },
+  {
+    "id": "81714e94-79ff-4046-81e4-9cc80ab02515",
+    "timestamp": "2026-09-13T16:38:53.275Z",
+    "lead_id": "LF-20260913-D8DC44A3",
+    "type": "workflow_completed",
+    "node": "Workflow Complete",
+    "message": "Workflow completed successfully: John Smith → COLD (35)",
+    "level": "info",
+    "data": {
+      "lead_id": "LF-20260913-D8DC44A3",
+      "route": "COLD",
+      "score": 35
+    }
+  },
+  {
+    "id": "56074b7a-4dd8-4026-a1b4-aed6db41cfee",
+    "timestamp": "2026-09-13T16:38:53.274Z",
+    "lead_id": "LF-20260913-D8DC44A3",
+    "type": "follow_up_generated",
+    "node": "Follow-Up Generation",
+    "message": "Follow-up message generated (574 chars) — status: Newsletter only",
+    "level": "info",
+    "data": {
+      "mode": "DEMO",
+      "whatsapp": "DEMO"
+    }
+  },
+  {
+    "id": "9271c1e7-0ee4-4790-9d49-592b3243f6fc",
+    "timestamp": "2026-09-13T16:38:53.274Z",
+    "lead_id": "LF-20260913-D8DC44A3",
+    "type": "notification_suppressed",
+    "node": "Email Notification",
+    "message": "Notification suppressed for COLD lead (score 35)",
+    "level": "info",
+    "data": null
+  },
+  {
+    "id": "b2b3e6f3-e831-436e-a0f5-feda5a54af09",
+    "timestamp": "2026-09-13T16:38:53.273Z",
+    "lead_id": "LF-20260913-D8DC44A3",
+    "type": "routed",
+    "node": "Hot/Warm/Cold Router",
+    "message": "Lead routed to COLD path (score 35)",
+    "level": "info",
+    "data": {
+      "route": "COLD",
+      "score": 35
+    }
+  },
+  {
+    "id": "be6c3bdb-67b4-453c-bfc8-5427861d43c8",
+    "timestamp": "2026-09-13T16:38:53.273Z",
+    "lead_id": "LF-20260913-D8DC44A3",
+    "type": "ai_qualified",
+    "node": "AI Qualification",
+    "message": "AI qualification complete: Lead Generation, Evaluating, Score 35, COLD",
+    "level": "info",
+    "data": {
+      "business_need": "Lead Generation",
+      "lead_intent": "Evaluating",
+      "urgency": "Low",
+      "qualification_score": 35,
+      "lead_temperature": "COLD",
+      "recommended_action": "Add to newsletter & retargeting — low priority, monthly check-in",
+      "reasoning": "Lead scored 35/100. Budget Less than $1k (10pts), Intent Evaluating (18pts), Urgency Low (2pts), Data quality 5pts. Business need identified as Lead Generation. Personal email — may need extra qualification. No website — ask for URL on call.",
+      "sales_message": "Hi John,\n\nThanks for reaching out about lead generation for Test Ventures — I saw you mentioned \"Lead Generation\".\n\nBased on what you shared, there’s a clear opportunity to build a predictable lead engine that turns your existing traffic into qualified pipeline.\n\nWe’ve helped similar other companies map their funnel in a 30-min call and identify 3 quick wins.\n\nWorth a quick 30-min strategy call this week? I can share a tailored teardown of your current flow.\n\nBest,\nAlex — LeadFlow Pro\n\nP.S. No pitch, just actionable feedback you can use even if we don’t work together.",
+      "score_breakdown": {
+        "budget": 10,
+        "intent": 18,
+        "urgency": 2,
+        "quality": 5
+      }
+    }
+  },
+  {
+    "id": "e6a3b681-87f2-49c0-9ea3-bd614f7f3b32",
+    "timestamp": "2026-09-13T16:38:53.272Z",
+    "lead_id": "LF-20260913-D8DC44A3",
+    "type": "normalized",
+    "node": "Normalize Data",
+    "message": "Lead normalized: John Smith (john@gmail.com)",
+    "level": "info",
+    "data": {
+      "lead_id": "LF-20260913-D8DC44A3"
+    }
+  },
+  {
+    "id": "0b0711a6-7c1c-4968-8ce9-ea10086fbea1",
+    "timestamp": "2026-09-13T16:38:53.271Z",
+    "lead_id": "8884d077-8f4b-4a7d-8464-1b03f55e20fd",
+    "type": "validation_passed",
+    "node": "Validate Lead",
+    "message": "Lead validation passed",
+    "level": "info",
+    "data": null
+  },
+  {
+    "id": "9f64dae5-e563-4a9b-9486-4d0df672b145",
+    "timestamp": "2026-09-13T16:38:53.271Z",
+    "lead_id": "8884d077-8f4b-4a7d-8464-1b03f55e20fd",
+    "type": "webhook",
+    "node": "Webhook",
+    "message": "Incoming lead webhook received",
+    "level": "info",
+    "data": {
+      "payload": [
+        "name",
+        "business",
+        "email",
+        "phone",
+        "website",
+        "industry",
+        "budget",
+        "needs",
+        "message",
+        "source",
+        "timestamp"
+      ]
+    }
+  },
+  {
+    "id": "45edb189-d89e-4d78-b0af-d8af6cf4d514",
+    "timestamp": "2026-09-13T16:38:53.253Z",
+    "lead_id": "LF-20260913-C50E7039",
+    "type": "workflow_completed",
+    "node": "Workflow Complete",
+    "message": "Workflow completed successfully: Marcus Reid → HOT (81)",
+    "level": "info",
+    "data": {
+      "lead_id": "LF-20260913-C50E7039",
+      "route": "HOT",
+      "score": 81
+    }
+  },
+  {
+    "id": "d938fc0c-e0eb-4dc9-a199-281192456fd1",
+    "timestamp": "2026-09-13T16:38:53.252Z",
+    "lead_id": "LF-20260913-C50E7039",
+    "type": "follow_up_generated",
+    "node": "Follow-Up Generation",
+    "message": "Follow-up message generated (537 chars) — status: Immediate outreach required",
+    "level": "info",
+    "data": {
+      "mode": "DEMO",
+      "whatsapp": "DEMO"
+    }
+  },
+  {
+    "id": "229599aa-c4c2-44f6-acf1-19b51b0d8490",
+    "timestamp": "2026-09-13T16:38:53.251Z",
+    "lead_id": "LF-20260913-C50E7039",
+    "type": "notification_sent",
+    "node": "Email Notification",
+    "message": "Notification prepared for HOT lead: 🔥 HOT LEAD — Pulse Agency — Score 81 → sales@leadflowpro.demo [DEMO]",
+    "level": "info",
+    "data": {
+      "subject": "🔥 HOT LEAD — Pulse Agency — Score 81",
+      "to": "sales@leadflowpro.demo",
+      "mode": "DEMO"
+    }
+  },
+  {
+    "id": "60788648-1290-4fa8-9708-7a366bc9cdec",
+    "timestamp": "2026-09-13T16:38:53.251Z",
+    "lead_id": "LF-20260913-C50E7039",
+    "type": "routed",
+    "node": "Hot/Warm/Cold Router",
+    "message": "Lead routed to HOT path (score 81)",
+    "level": "info",
+    "data": {
+      "route": "HOT",
+      "score": 81
+    }
+  },
+  {
+    "id": "6a715287-2f78-47c6-9a17-5e3bee6d7e5d",
+    "timestamp": "2026-09-13T16:38:53.251Z",
+    "lead_id": "LF-20260913-C50E7039",
+    "type": "ai_qualified",
+    "node": "AI Qualification",
+    "message": "AI qualification complete: Website, Evaluating, Score 81, HOT",
+    "level": "info",
+    "data": {
+      "business_need": "Website",
+      "lead_intent": "Evaluating",
+      "urgency": "High",
+      "qualification_score": 81,
+      "lead_temperature": "HOT",
+      "recommended_action": "Immediate sales outreach — call within 15 mins, send personalized proposal",
+      "reasoning": "Lead scored 81/100. Budget $5k - $15k (28pts), Intent Evaluating (18pts), Urgency High (10pts), Data quality 25pts. Business need identified as Website. Business email indicates professional buyer. Website provided — can research before call.",
+      "sales_message": "Hi Marcus,\n\nThanks for reaching out about website for Pulse Agency — I saw you mentioned \"Conversion Optimization\".\n\nBased on what you shared, there’s a clear opportunity to automate qualification and follow-up so your team focuses on hot opportunities.\n\nWe’ve helped similar agency / services companies launch this in 7-14 days.\n\nWorth a quick 30-min strategy call this week? I can share a tailored teardown of your current flow.\n\nBest,\nAlex — LeadFlow Pro\n\nP.S. Saw you need this urgently — I’ve blocked time today/tomorrow if helpful.",
+      "score_breakdown": {
+        "budget": 28,
+        "intent": 18,
+        "urgency": 10,
+        "quality": 25
+      }
+    }
+  },
+  {
+    "id": "e2f37fff-d948-4985-9e5a-d35965c9ae0a",
+    "timestamp": "2026-09-13T16:38:53.250Z",
+    "lead_id": "LF-20260913-C50E7039",
+    "type": "normalized",
+    "node": "Normalize Data",
+    "message": "Lead normalized: Marcus Reid (marcus@pulseagency.co)",
+    "level": "info",
+    "data": {
+      "lead_id": "LF-20260913-C50E7039"
+    }
+  },
+  {
+    "id": "947bd37d-917a-460a-8c5e-7cd5853b335b",
+    "timestamp": "2026-09-13T16:38:53.249Z",
+    "lead_id": "abb7bb90-ed30-49db-aab5-b64ef7368cb2",
+    "type": "validation_passed",
+    "node": "Validate Lead",
+    "message": "Lead validation passed",
+    "level": "info",
+    "data": null
+  },
+  {
+    "id": "7a798a74-9f87-4d63-ab2e-e90ab3076744",
+    "timestamp": "2026-09-13T16:38:53.249Z",
+    "lead_id": "abb7bb90-ed30-49db-aab5-b64ef7368cb2",
+    "type": "webhook",
+    "node": "Webhook",
+    "message": "Incoming lead webhook received",
+    "level": "info",
+    "data": {
+      "payload": [
+        "name",
+        "business",
+        "email",
+        "phone",
+        "website",
+        "industry",
+        "budget",
+        "needs",
+        "message",
+        "source",
+        "timestamp"
+      ]
+    }
+  },
+  {
+    "id": "414afd6e-19cf-4fad-b77a-6882a4774bee",
+    "timestamp": "2026-09-13T16:38:51.972Z",
+    "lead_id": "LF-20260913-7EC88D49",
+    "type": "workflow_completed",
+    "node": "Workflow Complete",
+    "message": "Workflow completed successfully: Sarah Chen → HOT (100)",
+    "level": "info",
+    "data": {
+      "lead_id": "LF-20260913-7EC88D49",
+      "route": "HOT",
+      "score": 100
+    }
+  },
+  {
+    "id": "6ce12e38-9a1d-4b07-a5c1-6bfcbca607d5",
+    "timestamp": "2026-09-13T16:38:51.971Z",
+    "lead_id": "LF-20260913-7EC88D49",
+    "type": "follow_up_generated",
+    "node": "Follow-Up Generation",
+    "message": "Follow-up message generated (506 chars) — status: Immediate outreach required",
+    "level": "info",
+    "data": {
+      "mode": "DEMO",
+      "whatsapp": "DEMO"
+    }
+  },
+  {
+    "id": "971ed68c-d1f2-4959-8db9-f77cd8eb104e",
+    "timestamp": "2026-09-13T16:38:51.971Z",
+    "lead_id": "LF-20260913-7EC88D49",
+    "type": "notification_sent",
+    "node": "Email Notification",
+    "message": "Notification prepared for HOT lead: 🔥 HOT LEAD — Atlas Labs — Score 100 → sales@leadflowpro.demo [DEMO]",
+    "level": "info",
+    "data": {
+      "subject": "🔥 HOT LEAD — Atlas Labs — Score 100",
+      "to": "sales@leadflowpro.demo",
+      "mode": "DEMO"
+    }
+  },
+  {
+    "id": "ab8e7c90-d202-461e-bccf-9c04f446df42",
+    "timestamp": "2026-09-13T16:38:51.970Z",
+    "lead_id": "LF-20260913-7EC88D49",
+    "type": "routed",
+    "node": "Hot/Warm/Cold Router",
+    "message": "Lead routed to HOT path (score 100)",
+    "level": "info",
+    "data": {
+      "route": "HOT",
+      "score": 100
+    }
+  },
+  {
+    "id": "cbfe0eaf-e74c-4fda-a244-221c8503cd3b",
+    "timestamp": "2026-09-13T16:38:51.970Z",
+    "lead_id": "LF-20260913-7EC88D49",
+    "type": "ai_qualified",
+    "node": "AI Qualification",
+    "message": "AI qualification complete: CRM Automation, Ready to Buy, Score 100, HOT",
+    "level": "info",
+    "data": {
+      "business_need": "CRM Automation",
+      "lead_intent": "Ready to Buy",
+      "urgency": "Critical",
+      "qualification_score": 100,
+      "lead_temperature": "HOT",
+      "recommended_action": "Immediate sales outreach — call within 15 mins, send personalized proposal",
+      "reasoning": "Lead scored 100/100. Budget $15k - $50k (35pts), Intent Ready to Buy (25pts), Urgency Critical (15pts), Data quality 25pts. Business need identified as CRM Automation. Business email indicates professional buyer. Website provided — can research before call.",
+      "sales_message": "Hi Sarah,\n\nThanks for reaching out about crm automation for Atlas Labs — I saw you mentioned \"Ready to Buy\".\n\nBased on what you shared, there’s a clear opportunity to connect your funnel so no lead gets lost between form and sales.\n\nWe’ve helped similar b2b saas companies launch this in 7-14 days.\n\nWorth a quick 30-min strategy call this week? I can share a tailored teardown of your current flow.\n\nBest,\nAlex — LeadFlow Pro\n\nP.S. Saw you need this urgently — I’ve blocked time today/tomorrow if helpful.",
+      "score_breakdown": {
+        "budget": 35,
+        "intent": 25,
+        "urgency": 15,
+        "quality": 25
+      }
+    }
+  },
+  {
+    "id": "fd344ad7-faf8-4c53-a838-f0acf6e1c840",
+    "timestamp": "2026-09-13T16:38:51.952Z",
+    "lead_id": "LF-20260913-7EC88D49",
+    "type": "normalized",
+    "node": "Normalize Data",
+    "message": "Lead normalized: Sarah Chen (sarah@atlaslabs.io)",
+    "level": "info",
+    "data": {
+      "lead_id": "LF-20260913-7EC88D49"
+    }
+  },
+  {
+    "id": "d669c68e-0c9b-45c2-943c-8978802c36bb",
+    "timestamp": "2026-09-13T16:38:51.951Z",
+    "lead_id": "4a97116b-77ac-4902-92d5-cf5763375a54",
+    "type": "validation_passed",
+    "node": "Validate Lead",
+    "message": "Lead validation passed",
+    "level": "info",
+    "data": null
+  },
+  {
+    "id": "5a2d7376-fbfa-4b19-baeb-1fee82d62bd1",
+    "timestamp": "2026-09-13T16:38:51.950Z",
+    "lead_id": "4a97116b-77ac-4902-92d5-cf5763375a54",
+    "type": "webhook",
+    "node": "Webhook",
+    "message": "Incoming lead webhook received",
+    "level": "info",
+    "data": {
+      "payload": [
+        "name",
+        "business",
+        "email",
+        "phone",
+        "website",
+        "industry",
+        "budget",
+        "needs",
+        "message",
+        "source",
+        "timestamp"
+      ]
+    }
+  }
+]

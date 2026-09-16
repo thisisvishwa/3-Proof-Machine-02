@@ -1,0 +1,90 @@
+# Render Blueprint — LeadFlow Proof Machine — 100% FREE
+# One-click deploy all backends + n8n
+# Go to https://dashboard.render.com/blueprints → New Blueprint → Connect repo → Select this file
+
+services:
+  # Demo 2 Backend — LeadFlow Automation
+  - type: web
+    name: leadflow-automation-backend
+    runtime: node
+    rootDir: leadflow-automation
+    buildCommand: npm install
+    startCommand: node server/index.js
+    plan: free
+    region: singapore
+    healthCheckPath: /
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: NODE_ENV
+        value: production
+      - key: GOOGLE_SHEETS_ENABLED
+        value: false
+      - key: EMAIL_ENABLED
+        value: false
+      - key: AI_PROVIDER
+        value: heuristic
+      - key: AI_MODEL
+        value: gpt-4o-mini
+      - key: WHATSAPP_NUMBER
+        value: 14155552671
+      - key: LEADFLOW_AI_URL
+        value: https://leadflow-ai-backend.onrender.com
+      - key: SALES_TEAM_EMAIL
+        value: sales@leadflowpro.demo
+      - key: MANAGER_EMAIL
+        value: manager@leadflowpro.demo
+      - key: EMAIL_FROM
+        value: automation@leadflowpro.demo
+
+  # Demo 3 Backend — LeadFlow AI
+  - type: web
+    name: leadflow-ai-backend
+    runtime: node
+    rootDir: leadflow-ai
+    buildCommand: npm install
+    startCommand: node server/index.js
+    plan: free
+    region: singapore
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: NODE_ENV
+        value: production
+      - key: AI_PROVIDER
+        value: heuristic
+      - key: AI_MODEL
+        value: gpt-4o-mini
+      # For LIVE OpenAI (optional, still free backend, OpenAI API is pay-per-use — keep heuristic for 100% free):
+      # - key: OPENAI_API_KEY
+      #   sync: false
+
+  # n8n — Real n8n Mission Control — Free Docker
+  - type: web
+    name: leadflow-n8n
+    runtime: image
+    image:
+      url: n8nio/n8n:latest
+    plan: free
+    region: singapore
+    healthCheckPath: /
+    envVars:
+      - key: N8N_BASIC_AUTH_ACTIVE
+        value: true
+      - key: N8N_BASIC_AUTH_USER
+        value: admin
+      - key: N8N_BASIC_AUTH_PASSWORD
+        value: LeadFlow123
+      - key: N8N_HOST
+        value: leadflow-n8n.onrender.com
+      - key: N8N_PROTOCOL
+        value: https
+      - key: N8N_PORT
+        value: 10000
+      - key: WEBHOOK_URL
+        value: https://leadflow-n8n.onrender.com
+      - key: GENERIC_TIMEZONE
+        value: Asia/Kolkata
+      - key: N8N_ENCRYPTION_KEY
+        value: leadflow-proof-machine-free-32chars

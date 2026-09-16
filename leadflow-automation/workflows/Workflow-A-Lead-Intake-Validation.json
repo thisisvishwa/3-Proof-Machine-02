@@ -1,0 +1,209 @@
+{
+  "name": "LeadFlow - A: Lead Intake & Validation",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "leadflow/new-lead",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-node",
+      "name": "Webhook - New Lead",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [460, 300],
+      "webhookId": "leadflow-new-lead-webhook"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.name }}",
+              "operation": "isNotEmpty"
+            },
+            {
+              "value1": "={{ $json.email }}",
+              "operation": "isNotEmpty"
+            },
+            {
+              "value1": "={{ $json.business }}",
+              "operation": "isNotEmpty"
+            }
+          ],
+          "number": [],
+          "boolean": []
+        },
+        "options": {}
+      },
+      "id": "validate-required",
+      "name": "IF - Required Fields Present",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.email }}",
+              "operation": "regex",
+              "value2": "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"
+            }
+          ]
+        }
+      },
+      "id": "validate-email",
+      "name": "IF - Valid Email Format",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const payload = $input.first().json;\nconst errors = [];\nif (!payload.name || payload.name.trim().length < 2) errors.push('Name required');\nif (!payload.email || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(payload.email)) errors.push('Valid email required');\nif (!payload.business) errors.push('Business required');\nif (!payload.needs && !payload.message) errors.push('Need/message required');\nif (!payload.industry) errors.push('Industry required');\nif (!payload.budget) errors.push('Budget required');\n\nreturn [{\n  json: {\n    ...payload,\n    validation: {\n      valid: errors.length === 0,\n      errors,\n      validated_at: new Date().toISOString()\n    }\n  }\n}];"
+      },
+      "id": "code-validate",
+      "name": "Code - Full Validation",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 600]
+    },
+    {
+      "parameters": {
+        "jsCode": "const now = new Date();\nconst payload = $input.first().json;\nfunction capitalize(s) {\n  return s.trim().split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');\n}\nconst lead_id = `LF-${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${Math.random().toString(36).slice(2,10).toUpperCase()}`;\nreturn [{\n  json: {\n    lead_id,\n    received_at: now.toISOString(),\n    name: payload.name ? capitalize(payload.name) : '',\n    business: payload.business.trim(),\n    email: payload.email.trim().toLowerCase(),\n    phone: payload.phone ? payload.phone.replace(/[^\\d\\+]/g,'') : '',\n    website: payload.website ? payload.website.replace(/^https?:\\/\\//,'').replace(/\\/$/,'') : '',\n    industry: payload.industry.trim(),\n    budget: payload.budget.trim(),\n    needs: payload.needs.trim(),\n    message: payload.message.trim(),\n    source: payload.source || 'LeadFlow Pro Website',\n    timestamp: payload.timestamp || now.toISOString(),\n    email_domain: payload.email.split('@')[1] || '',\n    is_business_email: !['gmail.com','yahoo.com','hotmail.com','outlook.com'].includes(payload.email.split('@')[1])\n  }\n}];"
+      },
+      "id": "code-normalize",
+      "name": "Code - Normalize Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $env.GOOGLE_SHEETS_ID }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Leads",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "mapping": {
+            "Lead ID": "={{ $json.lead_id }}",
+            "Date": "={{ $json.received_at }}",
+            "Name": "={{ $json.name }}",
+            "Business": "={{ $json.business }}",
+            "Email": "={{ $json.email }}",
+            "Phone": "={{ $json.phone }}",
+            "Website": "={{ $json.website }}",
+            "Industry": "={{ $json.industry }}",
+            "Budget": "={{ $json.budget }}",
+            "Need": "={{ $json.needs }}",
+            "Message": "={{ $json.message }}",
+            "Source": "={{ $json.source }}",
+            "Created At": "={{ $json.received_at }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "sheets-append",
+      "name": "Google Sheets - Append Lead",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [1340, 300],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "google-sheets-creds",
+          "name": "Google Sheets OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "workflow-b-ai-qualification",
+          "mode": "id"
+        },
+        "data": "={{ $json }}"
+      },
+      "id": "execute-b",
+      "name": "Execute Workflow - AI Qualification",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1,
+      "position": [1560, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseData": "={{ { success: false, valid: false, errors: $json.validation.errors, lead_id: $json.lead_id || 'invalid' } }}",
+        "options": {}
+      },
+      "id": "respond-invalid",
+      "name": "Respond - Invalid Lead",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1120, 600]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { error_type: 'validation_failed', timestamp: new Date().toISOString(), failed_node: 'Validate Lead', lead_id: $input.first().json.lead_id || 'unknown', message: $input.first().json.validation.errors.join('; ') } }];"
+      },
+      "id": "log-invalid",
+      "name": "Code - Log Invalid Lead",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1340, 600]
+    }
+  ],
+  "connections": {
+    "Webhook - New Lead": {
+      "main": [[{ "node": "IF - Required Fields Present", "type": "main", "index": 0 }]]
+    },
+    "IF - Required Fields Present": {
+      "main": [
+        [{ "node": "IF - Valid Email Format", "type": "main", "index": 0 }],
+        [{ "node": "Code - Full Validation", "type": "main", "index": 0 }]
+      ]
+    },
+    "IF - Valid Email Format": {
+      "main": [
+        [{ "node": "Code - Normalize Data", "type": "main", "index": 0 }],
+        [{ "node": "Code - Full Validation", "type": "main", "index": 0 }]
+      ]
+    },
+    "Code - Full Validation": {
+      "main": [[{ "node": "Respond - Invalid Lead", "type": "main", "index": 0 }]]
+    },
+    "Code - Normalize Data": {
+      "main": [[{ "node": "Google Sheets - Append Lead", "type": "main", "index": 0 }]]
+    },
+    "Google Sheets - Append Lead": {
+      "main": [[{ "node": "Execute Workflow - AI Qualification", "type": "main", "index": 0 }]]
+    },
+    "Respond - Invalid Lead": {
+      "main": [[{ "node": "Code - Log Invalid Lead", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "v1",
+  "meta": {
+    "instanceId": "leadflow-demo"
+  },
+  "pinData": {},
+  "tags": [
+    { "name": "LeadFlow Pro" },
+    { "name": "Intake" }
+  ]
+}
