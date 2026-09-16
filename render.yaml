@@ -1,9 +1,11 @@
-# Render Blueprint — LeadFlow Proof Machine — 100% FREE
-# One-click deploy all backends + n8n
-# Go to https://dashboard.render.com/blueprints → New Blueprint → Connect repo → Select this file
+# Render Blueprint — LeadFlow Proof Machine
+# Demo 2 + Demo 3 + n8n + PostgreSQL
 
 services:
-  # Demo 2 Backend — LeadFlow Automation
+
+  # ============================================================
+  # DEMO 2 BACKEND — LEADFLOW AUTOMATION
+  # ============================================================
   - type: web
     name: leadflow-automation-backend
     runtime: node
@@ -16,28 +18,42 @@ services:
     envVars:
       - key: PORT
         value: 10000
+
       - key: NODE_ENV
         value: production
+
       - key: GOOGLE_SHEETS_ENABLED
         value: false
+
       - key: EMAIL_ENABLED
         value: false
+
       - key: AI_PROVIDER
         value: heuristic
+
       - key: AI_MODEL
         value: gpt-4o-mini
+
       - key: WHATSAPP_NUMBER
-        value: 14155552671
+        value: 918121990098
+
+      # Actual deployed LeadFlow AI backend
       - key: LEADFLOW_AI_URL
-        value: https://leadflow-ai-backend.onrender.com
+        value: https://leadflow-ai-backend-x0yu.onrender.com
+
       - key: SALES_TEAM_EMAIL
         value: sales@leadflowpro.demo
+
       - key: MANAGER_EMAIL
         value: manager@leadflowpro.demo
+
       - key: EMAIL_FROM
         value: automation@leadflowpro.demo
 
-  # Demo 3 Backend — LeadFlow AI
+
+  # ============================================================
+  # DEMO 3 BACKEND — LEADFLOW AI
+  # ============================================================
   - type: web
     name: leadflow-ai-backend
     runtime: node
@@ -50,41 +66,112 @@ services:
     envVars:
       - key: PORT
         value: 10000
+
       - key: NODE_ENV
         value: production
+
       - key: AI_PROVIDER
         value: heuristic
+
       - key: AI_MODEL
         value: gpt-4o-mini
-      # For LIVE OpenAI (optional, still free backend, OpenAI API is pay-per-use — keep heuristic for 100% free):
+
+      # Optional live OpenAI mode
+      # Do NOT add this unless you actually want to use
+      # paid OpenAI API calls.
+      #
       # - key: OPENAI_API_KEY
       #   sync: false
 
-  # n8n — Real n8n Mission Control — Free Docker
+
+  # ============================================================
+  # N8N — LEADFLOW MISSION CONTROL
+  # ============================================================
   - type: web
     name: leadflow-n8n
     runtime: image
+
     image:
-      url: n8nio/n8n:latest
+      # Pin a stable n8n release instead of latest.
+      url: docker.io/n8nio/n8n:2.31.3
+
     plan: free
     region: singapore
-    healthCheckPath: /
+
+    # n8n's native health endpoint
+    healthCheckPath: /healthz
+
     envVars:
-      - key: N8N_BASIC_AUTH_ACTIVE
-        value: true
-      - key: N8N_BASIC_AUTH_USER
-        value: admin
-      - key: N8N_BASIC_AUTH_PASSWORD
-        value: LeadFlow123
+
+      # --------------------------------------------------------
+      # DATABASE
+      # Automatically connected to Render Postgres below.
+      # --------------------------------------------------------
+
+      - key: DB_TYPE
+        value: postgresdb
+
+      - key: DB_POSTGRESDB_DATABASE
+        fromDatabase:
+          name: leadflow-n8n-db
+          property: database
+
+      - key: DB_POSTGRESDB_HOST
+        fromDatabase:
+          name: leadflow-n8n-db
+          property: host
+
+      - key: DB_POSTGRESDB_PASSWORD
+        fromDatabase:
+          name: leadflow-n8n-db
+          property: password
+
+      - key: DB_POSTGRESDB_USER
+        fromDatabase:
+          name: leadflow-n8n-db
+          property: user
+
+      - key: DB_POSTGRESDB_PORT
+        fromDatabase:
+          name: leadflow-n8n-db
+          property: port
+
+
+      # --------------------------------------------------------
+      # N8N SECURITY
+      # --------------------------------------------------------
+
+      - key: N8N_ENCRYPTION_KEY
+        generateValue: true
+
+
+      # --------------------------------------------------------
+      # N8N NETWORK
+      # --------------------------------------------------------
+
       - key: N8N_HOST
-        value: leadflow-n8n.onrender.com
+        value: leadflow-n8n-x0yu.onrender.com
+
       - key: N8N_PROTOCOL
         value: https
+
       - key: N8N_PORT
         value: 10000
-      - key: WEBHOOK_URL
-        value: https://leadflow-n8n.onrender.com
+
+      - key: N8N_WEBHOOK_URL
+        value: https://leadflow-n8n-x0yu.onrender.com/
+
       - key: GENERIC_TIMEZONE
         value: Asia/Kolkata
-      - key: N8N_ENCRYPTION_KEY
-        value: leadflow-proof-machine-free-32chars
+
+
+# ==============================================================
+# POSTGRESQL DATABASE FOR N8N
+# ==============================================================
+databases:
+
+  - name: leadflow-n8n-db
+    databaseName: n8n
+    user: n8n
+    plan: free
+    region: singapore
